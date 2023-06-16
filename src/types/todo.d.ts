@@ -12,3 +12,5 @@ export interface ISubtask {
   status: string;
   created_at: string;
 }
+
+export type IStatus = 'pending' | 'completed';

@@ -1,7 +1,12 @@
 import { AxiosResponse } from 'axios';
 import api from '@/utils/config';
 
-import { ICreateTodo, ICreateTodoRes, IGetTodoListRes } from './type';
+import {
+  ICreateTodo,
+  ICreateTodoRes,
+  IGetTodoListRes,
+  IUpdateTodoStatus,
+} from './type';
 
 export const createTodo = async (
   data: ICreateTodo
@@ -23,3 +28,6 @@ export const getTodoList = async (): Promise<IGetTodoListRes> => {
 
   return res.data;
 };
+
+export const updateTodoStatus = async ({ id, status }: IUpdateTodoStatus) =>
+  api({ method: 'PATCH', url: `tasks/${id}`, data: { status } });

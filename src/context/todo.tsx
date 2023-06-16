@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-import { createTodo, getTodoList } from '@/api';
-import { ITask } from '@/types/todo';
+import { createTodo, getTodoList, updateTodoStatus } from '@/api';
+import { ITask, IStatus } from '@/types/todo';
 import Modal from '@/components/Modal';
 
 interface TodoProviderProps {
@@ -11,8 +11,12 @@ interface TodoProviderProps {
 interface ITodoContext {
   isCreatingTodo: boolean;
   onCreateTodo: (title: string) => void;
+
   todoList: ITask[];
   isFetchingTodoList: boolean;
+
+  onUpdateTodoStatus: (id: number, status: IStatus) => void;
+  updatingTodoStatusId: number | null;
 }
 
 export const TodoContext = createContext<ITodoContext | null>(null);
@@ -22,6 +26,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
   const [isFetchingTodoList, setFetchingTodoList] = useState(false);
   const [isCreatingTodo, setCreatingTodo] = useState(false);
+  const [updatingTodoStatusId, setUpdatingTodoStatusId] = useState<number | null>(null);
 
   const onCreateTodo = async (title: string) => {
     setCreatingTodo(true);
@@ -38,6 +43,24 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
       Modal.error({
         title: 'Creation Failed',
         content: res?.message || '',
+      });
+    }
+  };
+
+  const onUpdateTodoStatus = async (id: number, status: IStatus) => {
+    setUpdatingTodoStatusId(id);
+    try {
+      await updateTodoStatus({ id, status });
+
+      setTodoList((prev) =>
+        prev.map((todo) => (todo.id === id ? { ...todo, status } : todo))
+      );
+      setUpdatingTodoStatusId(null);
+    } catch (error: any) {
+      setUpdatingTodoStatusId(null);
+
+      Modal.error({
+        title: 'Update Failed',
       });
     }
   };
@@ -60,8 +83,12 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   const contextValue: ITodoContext = {
     isCreatingTodo,
     onCreateTodo,
+
     todoList,
     isFetchingTodoList,
+
+    updatingTodoStatusId,
+    onUpdateTodoStatus,
   };
 
   return (

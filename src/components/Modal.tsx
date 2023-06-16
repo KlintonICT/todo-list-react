@@ -2,7 +2,7 @@ import { Modal as AntdModal } from 'antd';
 
 interface IErrorModal {
   title: string;
-  content: string;
+  content?: string;
 }
 
 const Modal = {
