@@ -1,7 +1,12 @@
 import { AxiosResponse } from 'axios';
 import api from '@/utils/config';
 
-import { ICreateSubtask, ICreateSubtaskRes } from './type';
+import {
+  ICreateSubtask,
+  ICreateSubtaskRes,
+  IUpdateSubtaskStatus,
+  IUpdateSubtaskStatusRes,
+} from './type';
 
 export const createSubtask = async (
   data: ICreateSubtask
@@ -10,6 +15,19 @@ export const createSubtask = async (
     method: 'POST',
     url: '/subtasks',
     data,
+  });
+
+  return res.data;
+};
+
+export const updateSubtaskStatus = async ({
+  id,
+  status,
+}: IUpdateSubtaskStatus): Promise<IUpdateSubtaskStatusRes> => {
+  const res: AxiosResponse<IUpdateSubtaskStatusRes> = await api({
+    method: 'PATCH',
+    url: `subtasks/${id}`,
+    data: { status },
   });
 
   return res.data;

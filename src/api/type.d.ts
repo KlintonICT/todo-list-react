@@ -25,3 +25,14 @@ export interface ICreateSubtaskRes {
   message: string;
   data: ISubtask;
 }
+
+export interface IUpdateSubtaskStatus {
+  id: number;
+  status: IStatus;
+}
+
+export interface IUpdateSubtaskStatusRes {
+  message: string;
+  todo_id: number;
+  todoStatus: IStatus;
+}

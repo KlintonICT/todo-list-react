@@ -5,6 +5,7 @@ import {
   getTodoList,
   updateTodoStatus,
   createSubtask,
+  updateSubtaskStatus,
 } from '@/api';
 import { ITask, IStatus } from '@/types/todo';
 import Modal from '@/components/Modal';
@@ -25,6 +26,9 @@ interface ITodoContext {
 
   isCreatingSubtask: boolean;
   onCreateSubtask: (todo_id: number, title: string) => void;
+
+  updatingSubtaskStatusId: number | null;
+  onUpdateSubtaskStatus: (id: number, status: IStatus) => void;
 }
 
 export const TodoContext = createContext<ITodoContext | null>(null);
@@ -38,6 +42,9 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [isCreatingSubtask, setCreatingSubtask] = useState(false);
 
   const [updatingTodoStatusId, setUpdatingTodoStatusId] = useState<
+    number | null
+  >(null);
+  const [updatingSubtaskStatusId, setUpdatingSubtaskStatusId] = useState<
     number | null
   >(null);
 
@@ -62,7 +69,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
   const onCreateSubtask = async (todo_id: number, title: string) => {
     setCreatingSubtask(true);
-    setUpdatingTodoStatusId(todo_id);
+
     try {
       const res = await createSubtask({ todo_id, title });
 
@@ -79,12 +86,11 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
       });
 
       setTodoList(tasks);
-      setUpdatingTodoStatusId(null);
+
       setCreatingSubtask(false);
     } catch (error: any) {
       const res = error?.response?.data;
 
-      setUpdatingTodoStatusId(null);
       setCreatingSubtask(false);
 
       Modal.error({
@@ -105,7 +111,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
             ? {
                 ...todo,
                 status,
-                subtasks: [...todo.subtasks.map((sub) => ({ ...sub, status }))],
+                subtasks: todo.subtasks.map((sub) => ({ ...sub, status })),
               }
             : todo
         )
@@ -113,6 +119,34 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
       setUpdatingTodoStatusId(null);
     } catch (error: any) {
       setUpdatingTodoStatusId(null);
+
+      Modal.error({
+        title: 'Update Failed',
+      });
+    }
+  };
+
+  const onUpdateSubtaskStatus = async (id: number, status: IStatus) => {
+    setUpdatingSubtaskStatusId(id);
+    try {
+      const res = await updateSubtaskStatus({ id, status });
+
+      setTodoList((prev) =>
+        prev.map((todo) =>
+          todo.id === res.todo_id
+            ? {
+                ...todo,
+                status: res.todoStatus,
+                subtasks: todo.subtasks.map((sub) =>
+                  sub.id === id ? { ...sub, status } : sub
+                ),
+              }
+            : todo
+        )
+      );
+      setUpdatingSubtaskStatusId(null);
+    } catch (error: any) {
+      setUpdatingSubtaskStatusId(null);
 
       Modal.error({
         title: 'Update Failed',
@@ -147,6 +181,9 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
     isCreatingSubtask,
     onCreateSubtask,
+
+    updatingSubtaskStatusId,
+    onUpdateSubtaskStatus,
   };
 
   return (
