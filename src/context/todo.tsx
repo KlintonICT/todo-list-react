@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-import { createTodo } from '@/api';
+import { createTodo, getTodoList } from '@/api';
 import { ITask } from '@/types/todo';
 import Modal from '@/components/Modal';
 
@@ -12,6 +12,7 @@ interface ITodoContext {
   isCreatingTodo: boolean;
   onCreateTodo: (title: string) => void;
   todoList: ITask[];
+  isFetchingTodoList: boolean;
 }
 
 export const TodoContext = createContext<ITodoContext | null>(null);
@@ -19,6 +20,7 @@ export const TodoContext = createContext<ITodoContext | null>(null);
 export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [todoList, setTodoList] = useState<ITask[]>([]);
 
+  const [isFetchingTodoList, setFetchingTodoList] = useState(false);
   const [isCreatingTodo, setCreatingTodo] = useState(false);
 
   const onCreateTodo = async (title: string) => {
@@ -40,10 +42,26 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     }
   };
 
+  const fetchTodoList = async () => {
+    setFetchingTodoList(true);
+    try {
+      const res = await getTodoList();
+      setTodoList(res);
+    } catch (error) {
+      console.log('Fetch todo list failed: ' + error);
+    }
+    setFetchingTodoList(false);
+  };
+
+  useEffect(() => {
+    fetchTodoList();
+  }, []);
+
   const contextValue: ITodoContext = {
     isCreatingTodo,
     onCreateTodo,
     todoList,
+    isFetchingTodoList,
   };
 
   return (
