@@ -1,6 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-import { createTodo, getTodoList, updateTodoStatus } from '@/api';
+import {
+  createTodo,
+  getTodoList,
+  updateTodoStatus,
+  createSubtask,
+} from '@/api';
 import { ITask, IStatus } from '@/types/todo';
 import Modal from '@/components/Modal';
 
@@ -17,6 +22,9 @@ interface ITodoContext {
 
   onUpdateTodoStatus: (id: number, status: IStatus) => void;
   updatingTodoStatusId: number | null;
+
+  isCreatingSubtask: boolean;
+  onCreateSubtask: (todo_id: number, title: string) => void;
 }
 
 export const TodoContext = createContext<ITodoContext | null>(null);
@@ -25,8 +33,13 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [todoList, setTodoList] = useState<ITask[]>([]);
 
   const [isFetchingTodoList, setFetchingTodoList] = useState(false);
+
   const [isCreatingTodo, setCreatingTodo] = useState(false);
-  const [updatingTodoStatusId, setUpdatingTodoStatusId] = useState<number | null>(null);
+  const [isCreatingSubtask, setCreatingSubtask] = useState(false);
+
+  const [updatingTodoStatusId, setUpdatingTodoStatusId] = useState<
+    number | null
+  >(null);
 
   const onCreateTodo = async (title: string) => {
     setCreatingTodo(true);
@@ -47,13 +60,55 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     }
   };
 
+  const onCreateSubtask = async (todo_id: number, title: string) => {
+    setCreatingSubtask(true);
+    setUpdatingTodoStatusId(todo_id);
+    try {
+      const res = await createSubtask({ todo_id, title });
+
+      const tasks: ITask[] = [...todoList].map((todo) => {
+        if (todo.id === todo_id) {
+          return {
+            ...todo,
+            status: 'pending',
+            subtasks: [...todo.subtasks, res.data],
+          };
+        }
+
+        return todo;
+      });
+
+      setTodoList(tasks);
+      setUpdatingTodoStatusId(null);
+      setCreatingSubtask(false);
+    } catch (error: any) {
+      const res = error?.response?.data;
+
+      setUpdatingTodoStatusId(null);
+      setCreatingSubtask(false);
+
+      Modal.error({
+        title: 'Creation Failed',
+        content: res?.message || '',
+      });
+    }
+  };
+
   const onUpdateTodoStatus = async (id: number, status: IStatus) => {
     setUpdatingTodoStatusId(id);
     try {
       await updateTodoStatus({ id, status });
 
       setTodoList((prev) =>
-        prev.map((todo) => (todo.id === id ? { ...todo, status } : todo))
+        prev.map((todo) =>
+          todo.id === id
+            ? {
+                ...todo,
+                status,
+                subtasks: [...todo.subtasks.map((sub) => ({ ...sub, status }))],
+              }
+            : todo
+        )
       );
       setUpdatingTodoStatusId(null);
     } catch (error: any) {
@@ -89,6 +144,9 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
     updatingTodoStatusId,
     onUpdateTodoStatus,
+
+    isCreatingSubtask,
+    onCreateSubtask,
   };
 
   return (

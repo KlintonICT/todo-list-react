@@ -1,0 +1,43 @@
+import { Card, Checkbox, Spin } from 'antd';
+
+import { useTodoContext } from '@/context/todo';
+import { ITask } from '@/types/todo';
+
+import Form from '@/components/Form';
+
+interface SubtaskListProps {
+  task: ITask;
+}
+
+const SubtaskList = ({ task }: SubtaskListProps) => {
+  const { isCreatingSubtask, updatingTodoStatusId, onCreateSubtask } =
+    useTodoContext();
+
+  const onSubmitNewSubtask = (title: string) => {
+    onCreateSubtask(task.id, title);
+  };
+
+  return (
+    <div>
+      {task.subtasks.map((item) => (
+        <Card key={item.id} className="mb-4">
+          <div className="flex gap-4 items-center">
+            <Spin size="small" spinning={updatingTodoStatusId === task.id}>
+              <Checkbox checked={item.status === 'completed'} />
+            </Spin>
+            <p>{item.title}</p>
+          </div>
+        </Card>
+      ))}
+      <Form
+        btnContent="New Step"
+        placeholder="What are the steps?"
+        onSubmit={onSubmitNewSubtask}
+        isLoading={isCreatingSubtask}
+        name={`subtask-form-${task.id}`}
+      />
+    </div>
+  );
+};
+
+export default SubtaskList;

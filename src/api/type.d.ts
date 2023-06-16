@@ -1,4 +1,4 @@
-import { ITask, IStatus } from '@/interface/todo';
+import { ITask, IStatus, ISubtask } from '@/interface/todo';
 
 export interface ICreateTodo {
   title: string;
@@ -14,4 +14,14 @@ export type IGetTodoListRes = ITask[];
 export interface IUpdateTodoStatus {
   id: number;
   status: IStatus;
+}
+
+export interface ICreateSubtask {
+  todo_id: number;
+  title: string;
+}
+
+export interface ICreateSubtaskRes {
+  message: string;
+  data: ISubtask;
 }
