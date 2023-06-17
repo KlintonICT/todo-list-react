@@ -46,7 +46,7 @@ const TodoList = () => {
         <p className="flex-1">{item.title}</p>
 
         {item.subtasks.length > 0 && (
-          <div className="text-right text-xs whitespace-nowrap">
+          <div className="text-right text-xs whitespace-nowrap text-gray">
             {getCompletionText(item)}
           </div>
         )}
