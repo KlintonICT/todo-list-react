@@ -30,7 +30,7 @@ const SubtaskList = ({ task }: SubtaskListProps) => {
   };
 
   return (
-    <div>
+    <>
       {task.subtasks.map((item) => (
         <Card key={item.id} className="mb-4">
           <div className="flex gap-4 items-center">
@@ -50,14 +50,16 @@ const SubtaskList = ({ task }: SubtaskListProps) => {
           </div>
         </Card>
       ))}
-      <Form
-        btnContent="New Step"
-        placeholder="What are the steps?"
-        onSubmit={onSubmitNewSubtask}
-        isLoading={isCreatingSubtask}
-        name={`subtask-form-${task.id}`}
-      />
-    </div>
+      <div className="mt-6">
+        <Form
+          btnContent="New Step"
+          placeholder="What are the steps?"
+          onSubmit={onSubmitNewSubtask}
+          isLoading={isCreatingSubtask}
+          name={`subtask-form-${task.id}`}
+        />
+      </div>
+    </>
   );
 };
 

@@ -15,3 +15,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.ant-card-body {
+  padding: 10px 15px !important;
+}
+
+.ant-collapse-content-box {
+background-color: rgb(240, 242, 245);
+}
+
+.ant-collapse-expand-icon svg {
+  transform: rotate(-90deg);
+}

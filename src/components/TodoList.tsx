@@ -4,6 +4,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 import { useTodoContext } from '@/context/todo';
 import { getStatus } from '@/utils/helper';
+import { ITask } from '@/types/todo';
 
 import SubtaskList from './SubtaskList';
 
@@ -20,6 +21,15 @@ const TodoList = () => {
     onUpdateTodoStatus(id, getStatus(checkValue));
   };
 
+  const getCompletionText = (task: ITask): string => {
+    const allSubtasks = task.subtasks.length;
+    const completedSubtasks = task.subtasks.filter(
+      (sub) => sub.status === 'completed'
+    ).length;
+
+    return `${completedSubtasks} of ${allSubtasks} completed`;
+  };
+
   const items: CollapseProps['items'] = todoList.map((item) => ({
     key: item.id,
     label: (
@@ -32,14 +42,21 @@ const TodoList = () => {
             />
           </Spin>
         </div>
-        <p>{item.title}</p>
+
+        <p className="flex-1">{item.title}</p>
+
+        {item.subtasks.length > 0 && (
+          <div className="text-right text-xs whitespace-nowrap">
+            {getCompletionText(item)}
+          </div>
+        )}
       </div>
     ),
     children: <SubtaskList task={item} />,
   }));
 
   return (
-    <div className="mt-6">
+    <div className="flex flex-col justify-center mt-6">
       <Spin size="large" spinning={isFetchingTodoList}>
         {!isFetchingTodoList && todoList.length > 0 && (
           <Collapse items={items} expandIconPosition="end" accordion={true} />
