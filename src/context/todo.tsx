@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 import {
   createTodo,
@@ -169,22 +169,25 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     fetchTodoList();
   }, []);
 
-  const contextValue: ITodoContext = {
-    isCreatingTodo,
-    onCreateTodo,
+  const contextValue: ITodoContext = useMemo(
+    () => ({
+      isCreatingTodo,
+      onCreateTodo,
 
-    todoList,
-    isFetchingTodoList,
+      todoList,
+      isFetchingTodoList,
 
-    updatingTodoStatusId,
-    onUpdateTodoStatus,
+      updatingTodoStatusId,
+      onUpdateTodoStatus,
 
-    isCreatingSubtask,
-    onCreateSubtask,
+      isCreatingSubtask,
+      onCreateSubtask,
 
-    updatingSubtaskStatusId,
-    onUpdateSubtaskStatus,
-  };
+      updatingSubtaskStatusId,
+      onUpdateSubtaskStatus,
+    }),
+    []
+  );
 
   return (
     <TodoContext.Provider value={contextValue}>{children}</TodoContext.Provider>
