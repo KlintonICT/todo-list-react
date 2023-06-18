@@ -1,10 +1,11 @@
-import { Input, Button, Form } from 'antd';
+import { Button } from 'antd';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
-interface FormValue {
+type FormValues = {
   title: string;
-}
+};
 
-interface FormProps {
+export interface FormProps {
   onSubmit: (title: string) => void;
   isLoading: boolean;
   btnContent: string;
@@ -19,35 +20,38 @@ const TodoForm = ({
   placeholder,
   name,
 }: FormProps) => {
-  const [form] = Form.useForm();
+  const { register, reset, handleSubmit } = useForm<FormValues>();
 
-  const onFinish = (values: FormValue) => {
-    const { title } = values;
+  const onSubmitForm: SubmitHandler<FormValues> = (data) => {
+    const { title } = data;
     if (title) {
       onSubmit(title);
-      form.resetFields();
+      reset();
     }
   };
 
   return (
-    <Form
-      form={form}
-      name={name}
-      className="flex gap-4 items-center justify-between my-4"
-      onFinish={onFinish}
-    >
-      <Form.Item name="title" className="w-full my-0">
-        <Input placeholder={placeholder} />
-      </Form.Item>
-      <Button
-        type="primary"
-        className="bg-primary"
-        htmlType="submit"
-        loading={isLoading}
+    <div>
+      <form
+        name={name}
+        className="flex gap-4 items-center justify-between my-4"
+        onSubmit={handleSubmit(onSubmitForm)}
       >
-        {btnContent}
-      </Button>
-    </Form>
+        <input
+          placeholder={placeholder}
+          {...register('title')}
+          className="border border-border-color rounded-[6px] py-[4px] px-[11px] w-full"
+        />
+        <Button
+          type="primary"
+          className="bg-primary"
+          htmlType="submit"
+          loading={isLoading}
+        >
+          {btnContent}
+        </Button>
+      </form>
+    </div>
   );
 };
 
