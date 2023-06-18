@@ -1,13 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from '@testing-library/react';
+import { setup } from '@/setupTests';
 import TodoForm, { FormProps } from '../Form';
-
-function setup(jsx: any) {
-  return {
-    user: userEvent.setup(),
-    ...render(jsx),
-  }
-}
 
 describe('TodoForm', () => {
   const onSubmitMock = jest.fn();
@@ -26,8 +19,8 @@ describe('TodoForm', () => {
   it('renders the form', () => {
     render(<TodoForm {...props} />);
 
-    const form = screen.getByRole('form')
-    const inputElement = screen.getByRole('textbox')
+    const form = screen.getByRole('form');
+    const inputElement = screen.getByRole('textbox');
     const buttonElement = screen.getByRole('button');
 
     expect(form).toBeInTheDocument();
@@ -38,26 +31,35 @@ describe('TodoForm', () => {
   it('calls onSubmit with the entered title when the form is submitted', async () => {
     const { user } = setup(<TodoForm {...props} />);
 
-    const inputElement = screen.getByRole('textbox')
+    const inputElement = screen.getByRole('textbox');
     const buttonElement = screen.getByRole('button');
 
     const title = 'Todo1';
-    await user.type(inputElement, title)
-    await user.click(buttonElement)
+    await user.type(inputElement, title);
+    await user.click(buttonElement);
 
     expect(onSubmitMock).toHaveBeenCalledTimes(1);
     expect(onSubmitMock).toHaveBeenCalledWith(title);
   });
 
+  it('should not calls onSubmit when form is submitted by empty title value', async () => {
+    const { user } = setup(<TodoForm {...props} />);
+
+    const buttonElement = screen.getByRole('button');
+    await user.click(buttonElement);
+
+    expect(onSubmitMock).not.toHaveBeenCalled();
+  })
+
   it('resets the form after successful submission', async () => {
     const { user } = setup(<TodoForm {...props} />);
 
-    const inputElement = screen.getByRole('textbox')
+    const inputElement = screen.getByRole('textbox');
     const buttonElement = screen.getByRole('button');
 
     const title = 'Todo1';
-    await user.type(inputElement, title)
-    await user.click(buttonElement)
+    await user.type(inputElement, title);
+    await user.click(buttonElement);
 
     expect(inputElement).toHaveValue('');
   });

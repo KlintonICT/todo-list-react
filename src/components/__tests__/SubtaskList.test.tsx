@@ -1,17 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { setup } from '@/setupTests';
 
 import * as TodoContext from '@/context/todo';
 import { ITodoContext } from '@/context/todo';
 import { ITask } from '@/types/todo';
 import SubtaskList from '../SubtaskList';
-
-function setup(jsx: any) {
-  return {
-    user: userEvent.setup(),
-    ...render(jsx),
-  };
-}
 
 describe('SubtaskList', () => {
   const task: ITask = {
