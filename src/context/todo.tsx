@@ -8,7 +8,7 @@ import {
   updateSubtaskStatus,
 } from '@/api';
 import { ITask, IStatus } from '@/types/todo';
-import Modal from '@/components/Modal';
+import { modal } from '@/utils/modal';
 
 interface TodoProviderProps {
   children: React.ReactNode;
@@ -60,7 +60,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
       setCreatingTodo(false);
 
-      Modal.error({
+      modal.error({
         title: 'Creation Failed',
         content: res?.message || '',
       });
@@ -93,7 +93,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
       setCreatingSubtask(false);
 
-      Modal.error({
+      modal.error({
         title: 'Creation Failed',
         content: res?.message || '',
       });
@@ -120,7 +120,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     } catch (error: any) {
       setUpdatingTodoStatusId(null);
 
-      Modal.error({
+      modal.error({
         title: 'Update Failed',
       });
     }
@@ -148,7 +148,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     } catch (error: any) {
       setUpdatingSubtaskStatusId(null);
 
-      Modal.error({
+      modal.error({
         title: 'Update Failed',
       });
     }

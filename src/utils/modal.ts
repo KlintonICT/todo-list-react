@@ -5,17 +5,15 @@ interface IErrorModal {
   content?: string;
 }
 
-const Modal = {
-  error: ({title, content}: IErrorModal) => {
+export const modal = {
+  error: ({ title, content }: IErrorModal) => {
     AntdModal.error({
       title,
       content,
       centered: true,
       maskClosable: true,
       okButtonProps: { className: 'bg-primary' },
-      closable: true
+      closable: true,
     });
   },
 };
-
-export default Modal;
