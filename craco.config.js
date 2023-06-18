@@ -6,4 +6,14 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  jest: {
+    configure: {
+      collectCoverage: true,
+      coverageDirectory: 'coverage',
+      coveragePathIgnorePatterns: ['/node_modules/'],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+      },
+    },
+  },
 };
