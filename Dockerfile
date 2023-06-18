@@ -1,20 +1,18 @@
-# Base image
 FROM node:18-alpine
 
-# Set the working directory in the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+ENV PATH /app/node_modules/.bin:$PATH
+ENV NODE_OPTIONS --openssl-legacy-provider
 
-# Install project dependencies
-RUN yarn
+COPY package.json ./
+COPY craco.config.js ./
 
-# Copy the entire project
-COPY . .
+ADD . /usr/src/app
 
-# Production build
-RUN yarn build
+RUN yarn install
+RUN yarn global add craco
 
-# Development server
+EXPOSE 3000
+
 CMD ["yarn", "start"]

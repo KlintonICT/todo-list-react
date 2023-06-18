@@ -1,12 +1,15 @@
-version: '3'
+version: '3.5'
 services:
   todo-frontend:
+    container_name: todo-frontend
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - '.:/usr/src/app'
+      - '/usr/src/app/node_modules'
     ports:
       - 3000:3000
-    volumes:
-      - .:/app
     environment:
+      - PATH=/app/node_modules/.bin:${PATH}
       - REACT_APP_API_URL=http://localhost:4000/api
