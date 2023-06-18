@@ -14,7 +14,7 @@ interface TodoProviderProps {
   children: React.ReactNode;
 }
 
-interface ITodoContext {
+export interface ITodoContext {
   isCreatingTodo: boolean;
   onCreateTodo: (title: string) => void;
 

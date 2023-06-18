@@ -12,6 +12,7 @@ module.exports = {
       coverageDirectory: 'coverage',
       coveragePathIgnorePatterns: ['/node_modules/'],
       moduleNameMapper: {
+        "axios": "axios/dist/node/axios.cjs",
         '^@/(.*)$': '<rootDir>/src/$1',
       },
     },
